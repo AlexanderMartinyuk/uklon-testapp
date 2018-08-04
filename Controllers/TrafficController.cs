@@ -8,7 +8,6 @@ namespace WebAPI.Controllers
 {
     public class TrafficController : Controller
     {
-        // GET api/regions
         [HttpGet]
         [Route("api/regions/all")]
         public IEnumerable<RegionModel> GetAllRegions()
@@ -22,18 +21,31 @@ namespace WebAPI.Controllers
         [Route("api/traffic/all")]
         public IEnumerable<TrafficModel> GetTrafficForAllRegions()
         {
-            var trafficService = new StubTrafficService();
+            var trafficService = new YandexTrafficService();
 
             return trafficService.GetAllTraffic();
         }
 
         [HttpGet]
         [Route("api/traffic/{regionCode}")]
-        public TrafficModel GetTrafficForRegion(long regionCode)
+        public IActionResult GetTrafficForRegion(long regionCode)
         {
-            var regionService = new StubTrafficService();
+            var regionService = new RegionsService();
+            var trafficService = new YandexTrafficService();
 
-            return regionService.GetTrafficForRegion(regionCode);
+            var region = regionService.GetRegionByCode(regionCode);
+            if (region == null)
+            {
+                return NotFound();
+            }
+
+            var traffic = trafficService.GetTrafficForRegion(regionCode);
+            if (traffic == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(traffic);
         }
     }
 }

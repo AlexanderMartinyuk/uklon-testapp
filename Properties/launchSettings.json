@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/regions",
+      "launchUrl": "api/traffic/87",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -19,7 +19,7 @@
     "WebAPI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/regions",
+      "launchUrl": "api/traffic/87",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

@@ -12,13 +12,18 @@ namespace WebAPI.Services
                                                                  [0] = "Немає заторів",
                                                                  [1] = "Невеликі затори",
                                                                  [2] = "Середні затори",
-                                                                 [3] = "Серйозні затори",
-                                                                 [4] = "Місцями ускладнення"
+                                                                 [3] = "Серйозні затори"
                                                              };
 
         public IEnumerable<TrafficModel> GetAllTraffic()
         {
+            var regionService = new RegionsService();
             var result = new List<TrafficModel>();
+
+            foreach (var region in regionService.GetAllRegions())
+            {
+                result.Add(GetTrafficForRegion(region.Code));
+            }
 
             return result;
         }
