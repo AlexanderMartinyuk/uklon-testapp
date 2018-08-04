@@ -6,10 +6,11 @@ using System.Linq;
 using Csv;
 
 using WebAPI.Models;
+using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Services
 {
-    public class RegionsService
+    public class RegionsService : IRegionService
     {
         private readonly Dictionary<long, string> _data = new Dictionary<long, string>();
 

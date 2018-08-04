@@ -8,27 +8,34 @@ using System.Threading.Tasks;
 using WebAPI.Models;
 using System.Xml;
 using System.Xml.Linq;
+using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Services
 {
-    public class YandexTrafficService
+    public class YandexTrafficService : ITrafficService
     {
         private const string GET_TRAFFIC_DATA_URL = "https://export.yandex.com/bar/reginfo.xml?region={0}&bustCache={1}";
 
+        private readonly IRegionService _regionService;
+
+        public YandexTrafficService(IRegionService regionService)
+        {
+            _regionService = regionService;
+        }
+
         public IEnumerable<TrafficModel> GetAllTraffic()
         {
-            var regionService = new RegionsService();
             var result = new List<TrafficModel>();
 
-            foreach (var region in regionService.GetAllRegions())
+            foreach (var region in _regionService.GetAllRegions())
             {
-                result.Add(GetTrafficForRegion(region.Code));
+                result.Add(GetTrafficForRegion(region));
             }
 
             return result;
         }
 
-        public TrafficModel GetTrafficForRegion(long regionCode)
+        public TrafficModel GetTrafficForRegion(RegionModel region)
         {
             var httpClient = new HttpClient(new HttpClientHandler
             {
@@ -39,7 +46,7 @@ namespace WebAPI.Services
                 }
             });
 
-            var url = GetRequestUrl(regionCode);
+            var url = GetRequestUrl(region.Code);
             var result = httpClient.GetAsync(url).Result;
             var stream = result.Content.ReadAsStreamAsync().Result;
 
