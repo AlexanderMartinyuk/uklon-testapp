@@ -5,6 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Tests\**" />
+    <Compile Remove="WebAPI.Tests\**" />
+    <Content Remove="Tests\**" />
+    <Content Remove="WebAPI.Tests\**" />
+    <EmbeddedResource Remove="Tests\**" />
+    <EmbeddedResource Remove="WebAPI.Tests\**" />
+    <None Remove="Tests\**" />
+    <None Remove="WebAPI.Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

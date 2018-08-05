@@ -28,7 +28,7 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Route("api/traffic/all")]
-        public async Task<IActionResult> GetTrafficForAllRegions()
+        public async Task<IActionResult> GetTrafficForAllRegionsAsync()
         {
             var traffics = await _trafficService.GetAllTrafficAsync();
             return Ok(

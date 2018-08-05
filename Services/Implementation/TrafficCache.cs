@@ -14,7 +14,7 @@ namespace WebAPI.Services.Implementation
             _context = new CacheStorageContext();
         }
 
-        public TrafficModel GetByRegionCode(long regionCode)
+        public virtual TrafficModel GetByRegionCode(long regionCode)
         {
             lock (_context)
             {
@@ -22,7 +22,7 @@ namespace WebAPI.Services.Implementation
             }           
         }
 
-        public void Save(TrafficModel model)
+        public virtual void Save(TrafficModel model)
         {
             lock (_context)
             {
@@ -44,7 +44,7 @@ namespace WebAPI.Services.Implementation
             }
         }
 
-        public void InitDatabase()
+        public virtual void InitDatabase()
         {
             _context.Database.EnsureCreated();                
         }
