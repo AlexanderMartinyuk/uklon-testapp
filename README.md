@@ -14,3 +14,41 @@ To config application with Yandex traffic provider with the cache in the appsett
 To config application to use stub provider without caching in the appsettings.json file set option "TrafficProvider": "Stub".
 
 To use application from Ukraint you need also to specify proxy in the config file. By default "Proxy": "http://88.99.149.188:31288"
+
+Application API supports 3 endpoints:
+
+### 1. Return all regions.
+GET /api/regions/all
+```text
+[
+  {
+    "code": <LONG>, // code of region
+    "name": <STRING> // name of region
+  },
+  ...
+]
+```
+
+### 2. Return traffic data for specified region.
+GET /api/traffic/{regionCode}, where {regionCode} - code of some region
+```text
+{
+  "traffic":
+   {
+      "level": <LONG>, // traffic level code
+      "hint": <STRING> // user friendly traffic level
+   },
+   "region":
+   {
+      "code": <LONG>, // code of region
+      "name": <STRING> // name of region
+    }
+}
+```
+Server can return 404 if the region code doesn't exist. Traffic can be null if data for specified region is absent.
+
+### 3. Return traffic data for all regions.
+GET /api/traffic/all
+``` 
+Response contains array of object that was specified in the previous endpoint
+```
