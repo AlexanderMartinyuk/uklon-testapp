@@ -30,7 +30,8 @@ namespace WebAPI
             }
             else
             {
-                services.AddScoped<ITrafficProvider, YandexTrafficProvider>();
+                var proxy = Configuration["Proxy"];
+                services.AddScoped<ITrafficProvider>(s => new YandexTrafficProvider(proxy, s.GetService<IRegionService>()));
                 services.AddScoped<ITrafficService, CachedTrafficService>();
             }
         }

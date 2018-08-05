@@ -12,9 +12,11 @@ namespace WebAPI.Services.Implementation
     public class YandexTrafficProvider : StubTrafficProvider
     {
         private const string TrafficDataApiUrl = "https://export.yandex.com/bar/reginfo.xml?region={0}&bustCache={1}";
+        private string _proxy;
 
-        public YandexTrafficProvider(IRegionService regionService) : base(regionService)
+        public YandexTrafficProvider(string proxy, IRegionService regionService) : base(regionService)
         {
+            _proxy = proxy;
         }
 
         public override TrafficModel GetTraffic(long regionCode)
@@ -24,7 +26,7 @@ namespace WebAPI.Services.Implementation
                 Proxy = new WebProxy
                 {
                     // use proxy to access Yandex in Ukraine
-                    Address = new Uri("http://88.99.149.188:31288"),
+                    Address = new Uri(_proxy),
                     UseDefaultCredentials = true
                 }
             });
