@@ -13,13 +13,26 @@ namespace WebAPI.Dto
             };
         }
 
-        public static TrafficDto GetTrafficDto(RegionModel regionModel, TrafficModel trafficModel)
+        public static TrafficDto GetTrafficDto(TrafficModel trafficModel)
         {
+            if (trafficModel.IsEmpty())
+            {
+                return null;
+            }
+
             return new TrafficDto
             {
                 Level = trafficModel.Level,
-                Hint = trafficModel.Hint,
-                Region = GetRegionDto(regionModel)
+                Hint = trafficModel.Hint,                
+            };
+        }
+
+        public static TrafficWithRegionDto GetTrafficWithRegionDto(TrafficModel traffic, RegionModel region)
+        {
+            return new TrafficWithRegionDto
+            {
+                Region = GetRegionDto(region),
+                Traffic = GetTrafficDto(traffic)
             };
         }
     }

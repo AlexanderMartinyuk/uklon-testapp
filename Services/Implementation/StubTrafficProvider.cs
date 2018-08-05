@@ -28,7 +28,7 @@ namespace WebAPI.Services.Implementation
             return await Task.Run(() =>
             {
                 var result = _data.ElementAt(new Random().Next(0, _data.Count));
-                return new TrafficModel(regionCode, result.Key, result.Value);
+                return ModelsFactory.NewTrafficModel(regionCode, result.Key, result.Value);
             });
         }
     }

@@ -38,7 +38,7 @@ namespace WebAPI.Controllers
                 {
 
                     var region = _regionService.GetRegionByCode(traffic.RegionCode);
-                    return DtoBuilder.GetTrafficDto(region, traffic);
+                    return DtoBuilder.GetTrafficWithRegionDto(traffic, region);
                 }
             ));
         }
@@ -59,7 +59,7 @@ namespace WebAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(DtoBuilder.GetTrafficDto(region, traffic));
+            return Ok(DtoBuilder.GetTrafficWithRegionDto(traffic, region));
         }
     }
 }

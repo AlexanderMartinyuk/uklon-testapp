@@ -46,7 +46,7 @@ namespace WebAPI.Services.Implementation
                 Debug.WriteLine(e);
             }
 
-            return new TrafficModel(regionCode);
+            return ModelsFactory.NewEmptyTrafficModel(regionCode);
         }
 
         private async Task<TrafficModel> GetTrafficModelFromXmlAsync(Stream stream, long regionCode)
@@ -63,13 +63,13 @@ namespace WebAPI.Services.Implementation
             if (regionElement == null)
             {
                 // data is absent for specified region
-                return new TrafficModel(regionCode);
+                return ModelsFactory.NewEmptyTrafficModel(regionCode);
             }
 
             var level = regionElement.Element("level")?.Value;
             var hint = regionElement.Elements("hint").Single(el => (string)el.Attribute("lang") == "uk").Value;
 
-            return new TrafficModel(regionCode, long.Parse(level), hint);
+            return ModelsFactory.NewTrafficModel(regionCode, long.Parse(level), hint);
         }
 
         private string GetRequestUrl(long regionCode)

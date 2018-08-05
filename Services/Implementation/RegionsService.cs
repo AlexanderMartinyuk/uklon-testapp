@@ -23,7 +23,7 @@ namespace WebAPI.Services.Implementation
 
             foreach (var region in _data)
             {
-                result.Add(new RegionModel(region.Key, region.Value));
+                result.Add(ModelsFactory.NewRegionModel(region.Key, region.Value));
             }
 
             return result.AsReadOnly();
@@ -33,7 +33,7 @@ namespace WebAPI.Services.Implementation
         {
             if (_data.TryGetValue(code, out var name))
             {
-                return new RegionModel(code, name);
+                return ModelsFactory.NewRegionModel(code, name);
             }
 
             return null;            

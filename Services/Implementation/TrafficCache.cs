@@ -1,50 +1,57 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
 using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Services.Implementation
 {
-    public class TrafficCache : ITrafficCache
+    public class TrafficCache : ITrafficCache, IDisposable
     {
-        public async Task<TrafficModel> GetByRegionCode(long regionCode)
+        private readonly CacheStorageContext _context;
+
+        public TrafficCache()
         {
-            using (var db = new CacheStorageContext())
-            {
-                return await db.Traffics.SingleOrDefaultAsync(t => t.RegionCode == regionCode);                
-            }
+            _context = new CacheStorageContext();
         }
 
-        public async Task Save(TrafficModel model)
+        public TrafficModel GetByRegionCode(long regionCode)
         {
-            using (var db = new CacheStorageContext())
+            lock (_context)
             {
-                var original = await db.Traffics.SingleOrDefaultAsync(t => t.RegionCode == model.RegionCode);
+                return _context.Traffics.SingleOrDefault(t => t.RegionCode == regionCode);
+            }           
+        }
+
+        public void Save(TrafficModel model)
+        {
+            lock (_context)
+            {
+                var original = _context.Traffics.SingleOrDefault(t => t.RegionCode == model.RegionCode);
                 if (original == null)
                 {
                     model.UpdatedAt = DateTime.Now;
-                    db.Traffics.Add(model);
+                    _context.Traffics.Add(model);
                 }
                 else
                 {
                     original.UpdatedAt = DateTime.Now;
                     original.Hint = model.Hint;
                     original.Level = model.Level;
-                    db.Traffics.Update(original);
+                    _context.Traffics.Update(original);
                 }
 
-                await db.SaveChangesAsync();              
+                _context.SaveChangesAsync();
             }
         }
 
         public void InitDatabase()
         {
-            using (var db = new CacheStorageContext())
-            {
-                db.Database.EnsureCreated();                
-            }
+            _context.Database.EnsureCreated();                
+        }
+
+        public void Dispose()
+        {
+            _context.Dispose();
         }
     }
 }

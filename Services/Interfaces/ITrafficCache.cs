@@ -5,8 +5,8 @@ namespace WebAPI.Services.Interfaces
 {
     public interface ITrafficCache
     {
-        Task<TrafficModel> GetByRegionCode(long regionCode);
-        Task Save(TrafficModel model);
+        TrafficModel GetByRegionCode(long regionCode);
+        void Save(TrafficModel model);
         void InitDatabase();
     }
 }

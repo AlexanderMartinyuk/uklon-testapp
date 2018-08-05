@@ -18,7 +18,7 @@ namespace WebAPI.Services.Implementation
 
         public override async Task<TrafficModel> GetTrafficForRegionAsync(RegionModel region)
         {
-            var traffic = await TrafficCache.GetByRegionCode(region.Code);
+            var traffic = TrafficCache.GetByRegionCode(region.Code);
             if (IsCachedValueActual(traffic))
             {
                 return traffic;
@@ -30,8 +30,8 @@ namespace WebAPI.Services.Implementation
                 return null;
             }
 
-            await TrafficCache.Save(traffic);
-            return await TrafficCache.GetByRegionCode(traffic.RegionCode);
+            TrafficCache.Save(traffic);
+            return TrafficCache.GetByRegionCode(traffic.RegionCode);
         }
 
         private bool IsCachedValueActual(TrafficModel traffic)
