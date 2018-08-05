@@ -8,9 +8,10 @@ namespace WebAPI.Services.Implementation
     public class CachedTrafficService : SimpleTrafficService
     {
         protected readonly ITrafficCache TrafficCache;
-        private int CachedValueActualInSeconds = 60;
+        private readonly int CachedValueActualInSeconds = 60;
 
-        public CachedTrafficService(ITrafficCache trafficCache, ITrafficProvider trafficService, IRegionService regionService) 
+        public CachedTrafficService(ITrafficCache trafficCache, ITrafficProvider trafficService,
+            IRegionService regionService)
             : base(trafficService, regionService)
         {
             TrafficCache = trafficCache;
@@ -20,15 +21,11 @@ namespace WebAPI.Services.Implementation
         {
             var traffic = TrafficCache.GetByRegionCode(region.Code);
             if (IsCachedValueActual(traffic))
-            {
                 return traffic;
-            }
 
             traffic = await TrafficProvider.GetTrafficAsync(region.Code);
             if (traffic == null)
-            {
                 return null;
-            }
 
             TrafficCache.Save(traffic);
             return TrafficCache.GetByRegionCode(traffic.RegionCode);
@@ -37,12 +34,11 @@ namespace WebAPI.Services.Implementation
         private bool IsCachedValueActual(TrafficModel traffic)
         {
             if (traffic == null)
-            {
                 return false;
-            }
 
             var age = DateTime.Now - traffic.UpdatedAt;
-            return age <= TimeSpan.FromSeconds(CachedValueActualInSeconds); ;
+            return age <= TimeSpan.FromSeconds(CachedValueActualInSeconds);
+            ;
         }
     }
 }

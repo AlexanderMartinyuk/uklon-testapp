@@ -14,12 +14,17 @@ namespace WebAPI.Services.Implementation
             _context = new CacheStorageContext();
         }
 
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
+
         public virtual TrafficModel GetByRegionCode(long regionCode)
         {
             lock (_context)
             {
                 return _context.Traffics.SingleOrDefault(t => t.RegionCode == regionCode);
-            }           
+            }
         }
 
         public virtual void Save(TrafficModel model)
@@ -46,12 +51,7 @@ namespace WebAPI.Services.Implementation
 
         public virtual void InitDatabase()
         {
-            _context.Database.EnsureCreated();                
-        }
-
-        public void Dispose()
-        {
-            _context.Dispose();
+            _context.Database.EnsureCreated();
         }
     }
 }

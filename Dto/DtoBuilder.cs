@@ -16,14 +16,12 @@ namespace WebAPI.Dto
         public static TrafficDto GetTrafficDto(TrafficModel trafficModel)
         {
             if (trafficModel.IsEmpty())
-            {
                 return null;
-            }
 
             return new TrafficDto
             {
                 Level = trafficModel.Level,
-                Hint = trafficModel.Hint,                
+                Hint = trafficModel.Hint
             };
         }
 

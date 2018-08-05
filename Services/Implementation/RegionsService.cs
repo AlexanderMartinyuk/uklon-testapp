@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Csv;
 using WebAPI.Models;
 using WebAPI.Services.Interfaces;
@@ -22,9 +23,7 @@ namespace WebAPI.Services.Implementation
             var result = new List<RegionModel>();
 
             foreach (var region in _data)
-            {
                 result.Add(ModelsFactory.NewRegionModel(region.Key, region.Value));
-            }
 
             return result.AsReadOnly();
         }
@@ -32,16 +31,14 @@ namespace WebAPI.Services.Implementation
         public RegionModel GetRegionByCode(long code)
         {
             if (_data.TryGetValue(code, out var name))
-            {
                 return ModelsFactory.NewRegionModel(code, name);
-            }
 
-            return null;            
+            return null;
         }
 
         private void ReadDataFromFile()
         {
-            var assemblyFullPath = System.Reflection.Assembly.GetAssembly(typeof(RegionsService)).Location;
+            var assemblyFullPath = Assembly.GetAssembly(typeof(RegionsService)).Location;
             var assemblyDirectory = Path.GetDirectoryName(assemblyFullPath);
             var dataFilePath = Path.Combine(assemblyDirectory, "Services", "Data", "regions.csv");
 
@@ -53,10 +50,8 @@ namespace WebAPI.Services.Implementation
                     var code = line[0];
                     var name = line[1];
 
-                    if (!long.TryParse(code, out long codeNum))
-                    {
+                    if (!long.TryParse(code, out var codeNum))
                         throw new Exception($"Incorrect format of file: {dataFilePath}");
-                    }
 
                     _data[codeNum] = name;
                 }

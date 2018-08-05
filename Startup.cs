@@ -31,7 +31,8 @@ namespace WebAPI
             else
             {
                 var proxy = Configuration["Proxy"];
-                services.AddScoped<ITrafficProvider>(s => new YandexTrafficProvider(proxy, s.GetService<IRegionService>()));
+                services.AddScoped<ITrafficProvider>(s =>
+                    new YandexTrafficProvider(proxy, s.GetService<IRegionService>()));
                 services.AddScoped<ITrafficService, CachedTrafficService>();
             }
         }
@@ -39,9 +40,7 @@ namespace WebAPI
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
 
             app.UseMvc();
 

@@ -24,7 +24,8 @@ namespace WebAPI.Services.Implementation
 
         public override async Task<TrafficModel> GetTrafficAsync(long regionCode)
         {
-            try { 
+            try
+            {
                 var httpClient = new HttpClient(new HttpClientHandler
                 {
                     Proxy = new WebProxy
@@ -39,7 +40,7 @@ namespace WebAPI.Services.Implementation
                 var responce = await httpClient.GetAsync(url);
                 var stream = responce.Content.ReadAsStreamAsync().Result;
 
-                return await GetTrafficModelFromXmlAsync(stream, regionCode); ;
+                return await GetTrafficModelFromXmlAsync(stream, regionCode);                
             }
             catch (Exception e)
             {
@@ -55,19 +56,14 @@ namespace WebAPI.Services.Implementation
             var trafficElement = xmldoc.Element("info")?.Element("traffic");
 
             if (trafficElement == null)
-            {
                 throw new Exception("Traffic element cannot be found.");
-            }
 
             var regionElement = trafficElement.Element("region");
             if (regionElement == null)
-            {
-                // data is absent for specified region
                 return ModelsFactory.NewEmptyTrafficModel(regionCode);
-            }
 
             var level = regionElement.Element("level")?.Value;
-            var hint = regionElement.Elements("hint").Single(el => (string)el.Attribute("lang") == "uk").Value;
+            var hint = regionElement.Elements("hint").Single(el => (string) el.Attribute("lang") == "uk").Value;
 
             return ModelsFactory.NewTrafficModel(regionCode, long.Parse(level), hint);
         }

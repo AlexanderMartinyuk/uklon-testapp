@@ -5,7 +5,7 @@ namespace WebAPI.Services.Implementation
 {
     public class CacheStorageContext : DbContext
     {
-        private string DataSourceConnection = "Data Source=cache.db";
+        private readonly string DataSourceConnection = "Data Source=cache.db";
 
         public DbSet<TrafficModel> Traffics { get; set; }
 
@@ -18,7 +18,7 @@ namespace WebAPI.Services.Implementation
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<TrafficModel>().HasKey(t => t.RegionCode);            
+            builder.Entity<TrafficModel>().HasKey(t => t.RegionCode);
         }
     }
 }

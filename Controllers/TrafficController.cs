@@ -32,15 +32,12 @@ namespace WebAPI.Controllers
         {
             var traffics = await _trafficService.GetAllTrafficAsync();
             return Ok(
-                traffics.
-                Where(traffic => traffic != null).
-                Select(traffic =>
-                {
-
-                    var region = _regionService.GetRegionByCode(traffic.RegionCode);
-                    return DtoBuilder.GetTrafficWithRegionDto(traffic, region);
-                }
-            ));
+                traffics.Where(traffic => traffic != null).Select(traffic =>
+                    {
+                        var region = _regionService.GetRegionByCode(traffic.RegionCode);
+                        return DtoBuilder.GetTrafficWithRegionDto(traffic, region);
+                    }
+                ));
         }
 
         [HttpGet]
@@ -49,15 +46,11 @@ namespace WebAPI.Controllers
         {
             var region = _regionService.GetRegionByCode(regionCode);
             if (region == null)
-            {
                 return NotFound();
-            }
 
             var traffic = await _trafficService.GetTrafficForRegionAsync(region);
             if (traffic == null)
-            {
                 return NotFound();
-            }
 
             return Ok(DtoBuilder.GetTrafficWithRegionDto(traffic, region));
         }

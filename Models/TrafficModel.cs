@@ -1,10 +1,16 @@
 ﻿using System;
-using System.Net.Security;
 
 namespace WebAPI.Models
 {
     public class TrafficModel
     {
+        public TrafficModel(long regionCode, long level = -1, string hint = null)
+        {
+            Level = level;
+            Hint = hint;
+            RegionCode = regionCode;
+        }
+
         public long RegionCode { get; set; }
         public long Level { get; set; }
         public string Hint { get; set; }
@@ -13,13 +19,6 @@ namespace WebAPI.Models
         public bool IsEmpty()
         {
             return Level == -1 && Hint == null;
-        }
-
-        public TrafficModel(long regionCode, long level = -1, string hint = null)
-        {
-            this.Level = level;
-            this.Hint = hint;
-            this.RegionCode = regionCode;
         }
     }
 }

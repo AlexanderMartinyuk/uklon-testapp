@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Models;
@@ -9,8 +8,8 @@ namespace WebAPI.Services.Implementation
 {
     public class SimpleTrafficService : ITrafficService
     {
-        protected readonly ITrafficProvider TrafficProvider;
         protected readonly IRegionService RegionService;
+        protected readonly ITrafficProvider TrafficProvider;
 
         public SimpleTrafficService(ITrafficProvider trafficProvider, IRegionService regionService)
         {
@@ -21,7 +20,7 @@ namespace WebAPI.Services.Implementation
         public virtual async Task<IEnumerable<TrafficModel>> GetAllTrafficAsync()
         {
             var regions = RegionService.GetAllRegions();
-            return await Task.WhenAll(regions.Select(async region => 
+            return await Task.WhenAll(regions.Select(async region =>
                 await GetTrafficForRegionAsync(region)));
         }
 
