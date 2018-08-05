@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using Csv;
-
 using WebAPI.Models;
 using WebAPI.Services.Interfaces;
 
-namespace WebAPI.Services
+namespace WebAPI.Services.Implementation
 {
     public class RegionsService : IRegionService
     {

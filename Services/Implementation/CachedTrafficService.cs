@@ -1,29 +1,47 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using WebAPI.Models;
 using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Services.Implementation
 {
-    public class CachedTrafficService : ICachedTrafficService
+    public class CachedTrafficService : SimpleTrafficService
     {
-        private readonly ITrafficService _trafficService;
+        protected readonly ITrafficCache TrafficCache;
+        private int CachedValueActualInSeconds = 60;
 
-        public CachedTrafficService(ITrafficService trafficService)
+        public CachedTrafficService(ITrafficCache trafficCache, ITrafficProvider trafficService, IRegionService regionService) 
+            : base(trafficService, regionService)
         {
-            _trafficService = trafficService;
+            TrafficCache = trafficCache;
         }
 
-        public IEnumerable<TrafficModel> GetAllTraffic()
+        public override TrafficModel GetTrafficForRegion(RegionModel region)
         {
-            return _trafficService.GetAllTraffic();
+            var traffic = TrafficCache.GetByRegionCode(region.Code);
+            if (IsCachedValueActual(traffic))
+            {
+                return traffic;
+            }
+
+            traffic = TrafficProvider.GetTraffic(region.Code);
+            if (traffic == null)
+            {
+                return null;
+            }
+
+            TrafficCache.Save(traffic);
+            return TrafficCache.GetByRegionCode(traffic.RegionCode);
         }
 
-        public TrafficModel GetTrafficForRegion(RegionModel region)
+        private bool IsCachedValueActual(TrafficModel traffic)
         {
-            return _trafficService.GetTrafficForRegion(region);
+            if (traffic == null)
+            {
+                return false;
+            }
+
+            var age = DateTime.Now - traffic.UpdatedAt;
+            return age <= TimeSpan.FromSeconds(CachedValueActualInSeconds); ;
         }
     }
 }

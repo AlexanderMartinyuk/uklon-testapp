@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using WebAPI.Services;
 using WebAPI.Services.Implementation;
 using WebAPI.Services.Interfaces;
 
@@ -23,17 +16,25 @@ namespace WebAPI
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
 
             services.AddScoped<IRegionService, RegionsService>();
-            services.AddScoped<ITrafficService, YandexTrafficService>();
-            services.AddScoped<ICachedTrafficService, CachedTrafficService>();
+            services.AddScoped<ITrafficCache, TrafficCache>();
+
+            if (Configuration["TrafficProvider"].Equals("Stub"))
+            {
+                services.AddScoped<ITrafficProvider, StubTrafficProvider>();
+                services.AddScoped<ITrafficService, SimpleTrafficService>();
+            }
+            else
+            {
+                services.AddScoped<ITrafficProvider, YandexTrafficProvider>();
+                services.AddScoped<ITrafficService, CachedTrafficService>();
+            }
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -42,6 +43,12 @@ namespace WebAPI
             }
 
             app.UseMvc();
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var trafficRepository = serviceScope.ServiceProvider.GetRequiredService<ITrafficCache>();
+                trafficRepository.InitDatabase();
+            }
         }
     }
 }

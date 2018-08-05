@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Models;
-using WebAPI.Services;
+using WebAPI.Dto;
 using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers
@@ -10,9 +8,9 @@ namespace WebAPI.Controllers
     public class TrafficController : Controller
     {
         private readonly IRegionService _regionService;
-        private readonly ICachedTrafficService _trafficService;
+        private readonly ITrafficService _trafficService;
 
-        public TrafficController(IRegionService regionsService, ICachedTrafficService trafficService)
+        public TrafficController(IRegionService regionsService, ITrafficService trafficService)
         {
             _regionService = regionsService;
             _trafficService = trafficService;
@@ -20,16 +18,24 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Route("api/regions/all")]
-        public IEnumerable<RegionModel> GetAllRegions()
+        public IActionResult GetAllRegions()
         {
-            return _regionService.GetAllRegions();
+            return Ok(
+                _regionService.GetAllRegions()
+                    .Select(DtoBuilder.GetRegionDto));
         }
 
         [HttpGet]
         [Route("api/traffic/all")]
-        public IEnumerable<TrafficModel> GetTrafficForAllRegions()
+        public IActionResult GetTrafficForAllRegions()
         {
-            return _trafficService.GetAllTraffic();
+            return Ok(
+                _trafficService.GetAllTraffic().Select(traffic =>
+                {
+                    var region = _regionService.GetRegionByCode(traffic.RegionCode);
+                    return DtoBuilder.GetTrafficDto(region, traffic);
+                }
+            ));
         }
 
         [HttpGet]
@@ -48,7 +54,7 @@ namespace WebAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(traffic);
+            return Ok(DtoBuilder.GetTrafficDto(region, traffic));
         }
     }
 }

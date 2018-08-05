@@ -4,11 +4,10 @@ using System.Linq;
 using WebAPI.Models;
 using WebAPI.Services.Interfaces;
 
-namespace WebAPI.Services
+namespace WebAPI.Services.Implementation
 {
-    public class StubTrafficService : ITrafficService
+    public class StubTrafficProvider : ITrafficProvider
     {
-        private readonly IRegionService _regionService;
         private readonly Dictionary<long, string> _data = new Dictionary<long, string>
                                                              {
                                                                  [0] = "Немає заторів",
@@ -16,29 +15,30 @@ namespace WebAPI.Services
                                                                  [2] = "Середні затори",
                                                                  [3] = "Серйозні затори"
                                                              };
+        protected readonly IRegionService RegionService;
 
-        public StubTrafficService(IRegionService regionService)
+        public StubTrafficProvider(IRegionService regionService)
         {
-            _regionService = regionService;
+            RegionService = regionService;
         }
 
-        public IEnumerable<TrafficModel> GetAllTraffic()
+        public virtual IEnumerable<TrafficModel> GetAllTraffic()
         {
             var result = new List<TrafficModel>();
 
-            foreach (var region in _regionService.GetAllRegions())
+            foreach (var region in RegionService.GetAllRegions())
             {
-                result.Add(GetTrafficForRegion(region));
+                result.Add(GetTraffic(region.Code));
             }
 
             return result;
         }
 
-        public TrafficModel GetTrafficForRegion(RegionModel region)
+        public virtual TrafficModel GetTraffic(long regionCode)
         {
             var result = _data.ElementAt(new Random().Next(0, _data.Count));
 
-            return new TrafficModel(result.Key, result.Value);
+            return new TrafficModel(result.Key, result.Value, regionCode);
         }
     }
 }
