@@ -1,11 +1,12 @@
-﻿using WebAPI.Models;
+﻿using System.Threading.Tasks;
+using WebAPI.Models;
 
 namespace WebAPI.Services.Interfaces
 {
     public interface ITrafficCache
     {
-        TrafficModel GetByRegionCode(long regionCode);
-        void Save(TrafficModel model);
+        Task<TrafficModel> GetByRegionCode(long regionCode);
+        Task Save(TrafficModel model);
         void InitDatabase();
     }
 }

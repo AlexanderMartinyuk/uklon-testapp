@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebAPI.Models;
 
 namespace WebAPI.Services.Interfaces
 {
     public interface ITrafficService
     {
-        IEnumerable<TrafficModel> GetAllTraffic();
+        Task<IEnumerable<TrafficModel>> GetAllTrafficAsync();
 
-        TrafficModel GetTrafficForRegion(RegionModel region);
+        Task<TrafficModel> GetTrafficForRegionAsync(RegionModel region);
     }
 }

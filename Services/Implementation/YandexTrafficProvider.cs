@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using WebAPI.Models;
 using WebAPI.Services.Interfaces;
@@ -12,35 +15,43 @@ namespace WebAPI.Services.Implementation
     public class YandexTrafficProvider : StubTrafficProvider
     {
         private const string TrafficDataApiUrl = "https://export.yandex.com/bar/reginfo.xml?region={0}&bustCache={1}";
-        private string _proxy;
+        private readonly string _proxy;
 
         public YandexTrafficProvider(string proxy, IRegionService regionService) : base(regionService)
         {
             _proxy = proxy;
         }
 
-        public override TrafficModel GetTraffic(long regionCode)
+        public override async Task<TrafficModel> GetTrafficAsync(long regionCode)
         {
-            var httpClient = new HttpClient(new HttpClientHandler
-            {
-                Proxy = new WebProxy
+            try { 
+                var httpClient = new HttpClient(new HttpClientHandler
                 {
-                    // use proxy to access Yandex in Ukraine
-                    Address = new Uri(_proxy),
-                    UseDefaultCredentials = true
-                }
-            });
+                    Proxy = new WebProxy
+                    {
+                        // use proxy to access Yandex in Ukraine
+                        Address = new Uri(_proxy),
+                        UseDefaultCredentials = true
+                    }
+                });
 
-            var url = GetRequestUrl(regionCode);
-            var responce = httpClient.GetAsync(url).Result;
-            var stream = responce.Content.ReadAsStreamAsync().Result;
+                var url = GetRequestUrl(regionCode);
+                var responce = await httpClient.GetAsync(url);
+                var stream = responce.Content.ReadAsStreamAsync().Result;
 
-            return GetTrafficModelFromXml(stream, regionCode); ;
+                return await GetTrafficModelFromXmlAsync(stream, regionCode); ;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+
+            return new TrafficModel(regionCode);
         }
 
-        private TrafficModel GetTrafficModelFromXml(Stream stream, long regionCode)
+        private async Task<TrafficModel> GetTrafficModelFromXmlAsync(Stream stream, long regionCode)
         {
-            var xmldoc = XDocument.Load(stream);
+            var xmldoc = await XDocument.LoadAsync(stream, LoadOptions.PreserveWhitespace, CancellationToken.None);
             var trafficElement = xmldoc.Element("info")?.Element("traffic");
 
             if (trafficElement == null)
@@ -52,13 +63,13 @@ namespace WebAPI.Services.Implementation
             if (regionElement == null)
             {
                 // data is absent for specified region
-                return null;
+                return new TrafficModel(regionCode);
             }
 
             var level = regionElement.Element("level")?.Value;
             var hint = regionElement.Elements("hint").Single(el => (string)el.Attribute("lang") == "uk").Value;
 
-            return new TrafficModel(long.Parse(level), hint, regionCode);
+            return new TrafficModel(regionCode, long.Parse(level), hint);
         }
 
         private string GetRequestUrl(long regionCode)

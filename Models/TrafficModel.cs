@@ -9,7 +9,7 @@ namespace WebAPI.Models
         public string Hint { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public TrafficModel(long level, string hint, long regionCode)
+        public TrafficModel(long regionCode, long level = -1, string hint = null)
         {
             this.Level = level;
             this.Hint = hint;

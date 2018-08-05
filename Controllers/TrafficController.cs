@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Dto;
 using WebAPI.Services.Interfaces;
@@ -27,11 +28,15 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Route("api/traffic/all")]
-        public IActionResult GetTrafficForAllRegions()
+        public async Task<IActionResult> GetTrafficForAllRegions()
         {
+            var traffics = await _trafficService.GetAllTrafficAsync();
             return Ok(
-                _trafficService.GetAllTraffic().Select(traffic =>
+                traffics.
+                Where(traffic => traffic != null).
+                Select(traffic =>
                 {
+
                     var region = _regionService.GetRegionByCode(traffic.RegionCode);
                     return DtoBuilder.GetTrafficDto(region, traffic);
                 }
@@ -40,7 +45,7 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Route("api/traffic/{regionCode}")]
-        public IActionResult GetTrafficForRegion(long regionCode)
+        public async Task<IActionResult> GetTrafficForRegionAsync(long regionCode)
         {
             var region = _regionService.GetRegionByCode(regionCode);
             if (region == null)
@@ -48,7 +53,7 @@ namespace WebAPI.Controllers
                 return NotFound();
             }
 
-            var traffic = _trafficService.GetTrafficForRegion(region);
+            var traffic = await _trafficService.GetTrafficForRegionAsync(region);
             if (traffic == null)
             {
                 return NotFound();

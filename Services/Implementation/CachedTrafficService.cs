@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using WebAPI.Models;
 using WebAPI.Services.Interfaces;
 
@@ -15,22 +16,22 @@ namespace WebAPI.Services.Implementation
             TrafficCache = trafficCache;
         }
 
-        public override TrafficModel GetTrafficForRegion(RegionModel region)
+        public override async Task<TrafficModel> GetTrafficForRegionAsync(RegionModel region)
         {
-            var traffic = TrafficCache.GetByRegionCode(region.Code);
+            var traffic = await TrafficCache.GetByRegionCode(region.Code);
             if (IsCachedValueActual(traffic))
             {
                 return traffic;
             }
 
-            traffic = TrafficProvider.GetTraffic(region.Code);
+            traffic = await TrafficProvider.GetTrafficAsync(region.Code);
             if (traffic == null)
             {
                 return null;
             }
 
-            TrafficCache.Save(traffic);
-            return TrafficCache.GetByRegionCode(traffic.RegionCode);
+            await TrafficCache.Save(traffic);
+            return await TrafficCache.GetByRegionCode(traffic.RegionCode);
         }
 
         private bool IsCachedValueActual(TrafficModel traffic)

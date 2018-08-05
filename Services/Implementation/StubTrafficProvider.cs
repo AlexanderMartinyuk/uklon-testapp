@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using WebAPI.Models;
 using WebAPI.Services.Interfaces;
 
@@ -22,23 +23,13 @@ namespace WebAPI.Services.Implementation
             RegionService = regionService;
         }
 
-        public virtual IEnumerable<TrafficModel> GetAllTraffic()
+        public virtual async Task<TrafficModel> GetTrafficAsync(long regionCode)
         {
-            var result = new List<TrafficModel>();
-
-            foreach (var region in RegionService.GetAllRegions())
+            return await Task.Run(() =>
             {
-                result.Add(GetTraffic(region.Code));
-            }
-
-            return result;
-        }
-
-        public virtual TrafficModel GetTraffic(long regionCode)
-        {
-            var result = _data.ElementAt(new Random().Next(0, _data.Count));
-
-            return new TrafficModel(result.Key, result.Value, regionCode);
+                var result = _data.ElementAt(new Random().Next(0, _data.Count));
+                return new TrafficModel(regionCode, result.Key, result.Value);
+            });
         }
     }
 }

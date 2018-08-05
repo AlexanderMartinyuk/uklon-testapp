@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
 using WebAPI.Services.Interfaces;
 
@@ -7,19 +9,19 @@ namespace WebAPI.Services.Implementation
 {
     public class TrafficCache : ITrafficCache
     {
-        public TrafficModel GetByRegionCode(long regionCode)
+        public async Task<TrafficModel> GetByRegionCode(long regionCode)
         {
             using (var db = new CacheStorageContext())
             {
-                return db.Traffics.SingleOrDefault(t => t.RegionCode == regionCode);                
+                return await db.Traffics.SingleOrDefaultAsync(t => t.RegionCode == regionCode);                
             }
         }
 
-        public void Save(TrafficModel model)
+        public async Task Save(TrafficModel model)
         {
             using (var db = new CacheStorageContext())
             {
-                var original = db.Traffics.SingleOrDefault(t => t.RegionCode == model.RegionCode);
+                var original = await db.Traffics.SingleOrDefaultAsync(t => t.RegionCode == model.RegionCode);
                 if (original == null)
                 {
                     model.UpdatedAt = DateTime.Now;
@@ -33,7 +35,7 @@ namespace WebAPI.Services.Implementation
                     db.Traffics.Update(original);
                 }
 
-                db.SaveChanges();              
+                await db.SaveChangesAsync();              
             }
         }
 

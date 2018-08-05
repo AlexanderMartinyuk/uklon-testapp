@@ -20,7 +20,7 @@ namespace WebAPI
         {
             services.AddMvc();
 
-            services.AddScoped<IRegionService, RegionsService>();
+            services.AddSingleton<IRegionService, RegionsService>();
             services.AddScoped<ITrafficCache, TrafficCache>();
 
             if (Configuration["TrafficProvider"].Equals("Stub"))
