@@ -30,7 +30,7 @@ GET /regions
 ```
 
 ### 2. Return traffic data for specified region.
-GET /traffic/{regionCode}, where {regionCode} - code of some region
+GET /traffics/{regionCode}, where {regionCode} - code of some region
 ```text
 {
   "traffic":
@@ -48,7 +48,7 @@ GET /traffic/{regionCode}, where {regionCode} - code of some region
 Server can return 404 if the region code doesn't exist. Traffic can be null if data for specified region is absent.
 
 ### 3. Return traffic data for all regions.
-GET /traffic
+GET /traffics
 ``` 
 Response contains array of object that was specified in the previous endpoint
 ```
