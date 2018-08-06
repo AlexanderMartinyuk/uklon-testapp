@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/regions/all")]
+        [Route("regions")]
         public IActionResult GetAllRegions()
         {
             return Ok(
@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/traffic/all")]
+        [Route("traffics")]
         public async Task<IActionResult> GetTrafficForAllRegionsAsync()
         {
             var traffics = await _trafficService.GetAllTrafficAsync();
@@ -41,7 +41,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/traffic/{regionCode}")]
+        [Route("traffics/{regionCode}")]
         public async Task<IActionResult> GetTrafficForRegionAsync(long regionCode)
         {
             var region = _regionService.GetRegionByCode(regionCode);
