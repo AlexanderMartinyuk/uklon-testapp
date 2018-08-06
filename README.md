@@ -18,7 +18,7 @@ To use application from Ukraint you need also to specify proxy in the config fil
 Application API supports 3 endpoints:
 
 ### 1. Return all regions.
-GET /api/regions/all
+GET /regions
 ```text
 [
   {
@@ -30,7 +30,7 @@ GET /api/regions/all
 ```
 
 ### 2. Return traffic data for specified region.
-GET /api/traffic/{regionCode}, where {regionCode} - code of some region
+GET /traffic/{regionCode}, where {regionCode} - code of some region
 ```text
 {
   "traffic":
@@ -48,7 +48,7 @@ GET /api/traffic/{regionCode}, where {regionCode} - code of some region
 Server can return 404 if the region code doesn't exist. Traffic can be null if data for specified region is absent.
 
 ### 3. Return traffic data for all regions.
-GET /api/traffic/all
+GET /traffic
 ``` 
 Response contains array of object that was specified in the previous endpoint
 ```
